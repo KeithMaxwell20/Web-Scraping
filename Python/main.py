@@ -27,7 +27,7 @@ url = "https://github.com/topics"
 lista_valores = []
 
 for topico in lista_topic:
-    url_busqueda = url + "/" + lista_topic #Url de un lenguaje dado
+    url_busqueda = url + "/" + topico #Url de un lenguaje dado
     pagina = requests.get(url_busqueda) #Recibe el html de la página
 
     soup = BeautifulSoup(pagina.content, "html.parser")
@@ -37,3 +37,14 @@ for topico in lista_topic:
 
     # El texto contiene cadenas y un valor numérico: extraemos el valor numérico
     valor = re.findall("\d+\,\d+", texto)
+
+    # Convertimos el valor a un número entero
+    valor[0] = valor[0].replace(',', '')
+    valor_num = int(valor[0])
+    print(topico, valor_num)
+
+
+
+
+
+
