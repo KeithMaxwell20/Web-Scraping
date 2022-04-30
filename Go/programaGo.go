@@ -1,19 +1,42 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
+	"runtime"
+	"strconv"
 	"unicode"
 
+	"github.com/go-echarts/go-echarts/v2/charts"
+	"github.com/go-echarts/go-echarts/v2/opts"
 	"github.com/gocolly/colly/v2"
 )
+
+// Para almacenar el Nombre y el topic a buscar de cada lenguaje
+type NombreTopic struct {
+	nombre string
+	topic  string
+}
+
+// Para almacenar el Nombre del lenguaje y la cantidad de repeticiones
+type NombreCant struct {
+	nombre   string
+	cantidad int
+}
 
 func main() {
 
 	fmt.Println("Iniciando Programa...")
+
+	//Leyendo del archivo .csv
+	archivoEntrada := "../tiobe-list.csv"
+	listaLenguajes := extraerDatosEntrada(archivoEntrada)
+
 	fmt.Println("Creando Archivo...")
-	myfile, err := os.Create("ResultadosGO.txt")
+	archivoSalida, err := os.Create("../Resultados/ResultadosGO.csv")
 
 	// error al crear el archivo.
 	if err != nil {
@@ -21,27 +44,141 @@ func main() {
 	}
 	fmt.Println("Archivo Creado con Exito!!!")
 
-	// Definimos la lista de los Lenguajes
-	listaLenguajesNombres := [20]string{"Python", "C", "Java", "C++", "C#", "Visual Basic", "JavaScript",
-		"Assembly Language", "SQL", "PHP", "R", "Delphi/Object Pascal", "Go", "Swift", "Ruby",
-		"Classic Visual Basic", "Objective-C", "Perl", "Lua", "MATLAB"}
-
-	listaLenguajesTopic := [20]string{"python", "c", "java", "cpp", "csharp", "visual-basic", "javascript",
-		"assembly", "sql", "php", "r", "object-pascal", "go", "swift", "ruby", "visual-basic", "objective-c",
-		"perl", "lua", "matlab"}
-
+	var listaResultados [20]NombreCant //Guardamos los resultados para las tablas
 	fmt.Println("Procesando...")
 	for i := 0; i < 20; i++ {
-		procesar(listaLenguajesNombres[i], listaLenguajesTopic[i], myfile)
+		listaResultados[i] = procesar(listaLenguajes[i].nombre, listaLenguajes[i].topic, archivoSalida)
+		fmt.Printf("... ")
 	}
+	fmt.Println("\nCerrando Archivo...")
+	archivoSalida.Close()
 
-	fmt.Println("Cerrando Archivo...")
-	myfile.Close()
+	// Ordenando Lista
+	ordenarListaResultados(&listaResultados)
+	//	archivoGrafico := "../Resultados/GraficosGO.html"
+	generarGraficoBarras(listaResultados, "GraficosGO.html")
+	openBrowser("GraficosGO.html")
 	fmt.Println("Programa Finalizado!")
 }
 
+// Selecciona el OS actual y abre la direccion en el navegador por defecto
+func openBrowser(url string) {
+	var err error
+
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+func generarItems(listaLenguajes [20]NombreCant) []opts.BarData {
+	items := make([]opts.BarData, 0)
+	for i := 0; i < 10; i++ {
+		items = append(items, opts.BarData{Value: listaLenguajes[i].cantidad})
+	}
+	return items
+}
+
+func generarGraficoBarras(listaLenguajes [20]NombreCant, direccionArchivo string) {
+	bar := charts.NewBar()
+	bar.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{
+			Title:    "Lenguajes con Mayor Nº de Apariciones",
+			Subtitle: "Los 10 primeros lenguajes, ordenados de mayor a menor",
+			Right:    "30%"}),
+		charts.WithTooltipOpts(opts.Tooltip{Show: true}),
+		charts.WithLegendOpts(opts.Legend{Right: "80%"}),
+		charts.WithXAxisOpts(opts.XAxis{
+			Name: "NOMBRE",
+		}),
+		charts.WithYAxisOpts(opts.YAxis{
+			Name: "Nº APARICIONES",
+		}),
+		charts.WithInitializationOpts(opts.Initialization{
+			Width:  "1500px",
+			Height: "600px",
+		}),
+	)
+
+	var nombres [10]string
+	// Generando los valores del eje X
+	for i := 0; i < 10; i++ {
+		nombres[i] = listaLenguajes[i].nombre
+	}
+
+	bar.SetXAxis(nombres).
+		AddSeries("Lenguaje", generarItems(listaLenguajes))
+
+	// Where the magic happens
+	f, _ := os.Create(direccionArchivo)
+	bar.Render(f)
+}
+
+// Ordena la lista de resultados, de mayor a menor
+func ordenarListaResultados(lista *[20]NombreCant) {
+	for i := 0; i < 19; i++ {
+		for j := i + 1; j < 20; j++ {
+			if lista[i].cantidad < lista[j].cantidad {
+				aux := lista[i]
+				lista[i] = lista[j]
+				lista[j] = aux
+			}
+		}
+	}
+}
+
+// Extrae los registros de archivo.csv y retorna en un
+// array struct
+func extraerDatosEntrada(archivoEntrada string) [20]NombreTopic {
+	var listaRegistro [20]NombreTopic
+	records, err := readData(archivoEntrada)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	var ind = 0
+	for _, record := range records {
+		aux := NombreTopic{
+			nombre: record[0],
+			topic:  record[1],
+		}
+		listaRegistro[ind] = aux
+		ind++
+	}
+	return listaRegistro
+}
+
+// Lee un registro del archivo .csv
+func readData(archivo string) ([][]string, error) {
+	f, err := os.Open(archivo)
+	if err != nil {
+		return [][]string{}, err
+	}
+	defer f.Close()
+	r := csv.NewReader(f)
+	// saltear la primera linea
+	if _, err := r.Read(); err != nil {
+		return [][]string{}, err
+	}
+	records, err := r.ReadAll()
+	if err != nil {
+		return [][]string{}, err
+	}
+	return records, nil
+}
+
 // Realiza el proceso de scrapping
-func procesar(lenguajeNomnbre string, lenguajeLink string, archivo *os.File) {
+func procesar(lenguajeNombre string, lenguajeLink string, archivo *os.File) NombreCant {
+	var registro NombreCant // Registro a retornar
+
 	// Link para el get
 	linkTopic := "https://github.com/topics/" + lenguajeLink
 
@@ -51,11 +188,15 @@ func procesar(lenguajeNomnbre string, lenguajeLink string, archivo *os.File) {
 	// Evento
 	c.OnHTML("h2.h3.color-fg-muted", func(e *colly.HTMLElement) {
 		numeroRepositorios := extractNumber(e.Text)
-		archivo.WriteString(lenguajeNomnbre + "," + numeroRepositorios)
+		registro.nombre = lenguajeNombre
+		registro.cantidad, _ = strconv.Atoi(numeroRepositorios)
+		archivo.WriteString(lenguajeNombre + "," + numeroRepositorios)
 		archivo.WriteString("\n")
 	})
 
 	c.Visit(linkTopic)
+
+	return registro
 }
 
 //Extrae el numero en el formato correcto
