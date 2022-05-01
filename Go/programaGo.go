@@ -160,7 +160,7 @@ func calcularRating(lista *[20]InfoLenguaje) {
 	max := maximo(*lista)
 	min := minimo(*lista)
 	for i := 0; i < 20; i++ {
-		lista[i].rating = (float64(max-lista[i].cantidad) / float64(max-min)) * 100.0
+		lista[i].rating = (float64(lista[i].cantidad-min) / float64(max-min)) * 100.0
 	}
 }
 
