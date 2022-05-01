@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"fmt"
 	"log"
@@ -40,14 +41,12 @@ func main() {
 	archivoEntrada := "../tiobe-list.csv"
 	listaLenguajes := extraerDatosEntrada(archivoEntrada)
 
-	fmt.Println("Creando Archivo...")
 	archivoSalida, err := os.Create("../Resultados/ResultadosGO.csv")
 
 	// error al crear el archivo.
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Archivo Creado con Exito!!!")
 
 	var listaResultados [20]InfoLenguaje //Guardamos los resultados para las tablas
 	fmt.Println("Procesando...")
@@ -55,14 +54,16 @@ func main() {
 		listaResultados[i] = procesar(listaLenguajes[i].nombre, listaLenguajes[i].topic, archivoSalida)
 		fmt.Printf("... ")
 	}
-	fmt.Println("\nCerrando Archivo...")
 	archivoSalida.Close()
-
+	fmt.Println("Proceso Completo!")
 	// Ordenando Lista
 	ordenarListaResultados(&listaResultados)
 	calcularRating(&listaResultados)
 	// Lista de Lenguajes con su rating
 	listarRating(listaResultados)
+	fmt.Println("A continuación, se genera el archivo del gráfico de barras.")
+	fmt.Println("Presione ENTER para continuar...")
+	bufio.NewReader(os.Stdin).ReadString('\n')
 	generarGraficoBarras(listaResultados, directorio+archivoGrafico)
 	openBrowser(directorio, archivoGrafico)
 	fmt.Println("Programa Finalizado!")
