@@ -21,9 +21,10 @@ type NombreTopic struct {
 	topic  string
 }
 
-// Para almacenar el Nombre del lenguaje y la cantidad de repeticiones
-type NombreCant struct {
+// Para almacenar el Nombre del lenguaje, rating y la cantidad de repeticiones
+type InfoLenguaje struct {
 	nombre   string
+	rating   float64
 	cantidad int
 }
 
@@ -48,7 +49,7 @@ func main() {
 	}
 	fmt.Println("Archivo Creado con Exito!!!")
 
-	var listaResultados [20]NombreCant //Guardamos los resultados para las tablas
+	var listaResultados [20]InfoLenguaje //Guardamos los resultados para las tablas
 	fmt.Println("Procesando...")
 	for i := 0; i < 20; i++ {
 		listaResultados[i] = procesar(listaLenguajes[i].nombre, listaLenguajes[i].topic, archivoSalida)
@@ -95,7 +96,8 @@ func openBrowser(directorio string, archivo string) {
 
 }
 
-func generarItems(listaLenguajes [20]NombreCant) []opts.BarData {
+// Genera la lista de cantidades para el gráfico de barras
+func generarItems(listaLenguajes [20]InfoLenguaje) []opts.BarData {
 	items := make([]opts.BarData, 0)
 	for i := 0; i < 10; i++ {
 		items = append(items, opts.BarData{Value: listaLenguajes[i].cantidad})
@@ -103,7 +105,7 @@ func generarItems(listaLenguajes [20]NombreCant) []opts.BarData {
 	return items
 }
 
-func generarGraficoBarras(listaLenguajes [20]NombreCant, direccionArchivo string) {
+func generarGraficoBarras(listaLenguajes [20]InfoLenguaje, direccionArchivo string) {
 	bar := charts.NewBar()
 	bar.SetGlobalOptions(
 		charts.WithTitleOpts(opts.Title{
@@ -139,7 +141,7 @@ func generarGraficoBarras(listaLenguajes [20]NombreCant, direccionArchivo string
 }
 
 // Ordena la lista de resultados, de mayor a menor
-func ordenarListaResultados(lista *[20]NombreCant) {
+func ordenarListaResultados(lista *[20]InfoLenguaje) {
 	for i := 0; i < 19; i++ {
 		for j := i + 1; j < 20; j++ {
 			if lista[i].cantidad < lista[j].cantidad {
@@ -192,8 +194,8 @@ func readData(archivo string) ([][]string, error) {
 }
 
 // Realiza el proceso de scrapping
-func procesar(lenguajeNombre string, lenguajeLink string, archivo *os.File) NombreCant {
-	var registro NombreCant // Registro a retornar
+func procesar(lenguajeNombre string, lenguajeLink string, archivo *os.File) InfoLenguaje {
+	var registro InfoLenguaje // Registro a retornar
 
 	// Link para el get
 	linkTopic := "https://github.com/topics/" + lenguajeLink
