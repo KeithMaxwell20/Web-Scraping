@@ -60,6 +60,9 @@ func main() {
 
 	// Ordenando Lista
 	ordenarListaResultados(&listaResultados)
+	calcularRating(&listaResultados)
+	// Lista de Lenguajes con su rating
+	listarRating(listaResultados)
 	generarGraficoBarras(listaResultados, directorio+archivoGrafico)
 	openBrowser(directorio, archivoGrafico)
 	fmt.Println("Programa Finalizado!")
@@ -135,7 +138,6 @@ func generarGraficoBarras(listaLenguajes [20]InfoLenguaje, direccionArchivo stri
 	bar.SetXAxis(nombres).
 		AddSeries("Lenguaje", generarItems(listaLenguajes))
 
-	// Where the magic happens
 	f, _ := os.Create(direccionArchivo)
 	bar.Render(f)
 }
@@ -151,6 +153,49 @@ func ordenarListaResultados(lista *[20]InfoLenguaje) {
 			}
 		}
 	}
+}
+
+// Calcula el rating y agrega el resultado al campo de cada registro
+func calcularRating(lista *[20]InfoLenguaje) {
+	max := maximo(*lista)
+	min := minimo(*lista)
+	for i := 0; i < 20; i++ {
+		lista[i].rating = (float64(max-lista[i].cantidad) / float64(max-min)) * 100.0
+	}
+}
+
+// Retorna el valor de la cantidad Maxima de repositorios
+func maximo(lista [20]InfoLenguaje) int {
+	valorRetorno := lista[0].cantidad
+	for i := 1; i < 20; i++ {
+		if valorRetorno < lista[i].cantidad {
+			valorRetorno = lista[i].cantidad
+		}
+	}
+	return valorRetorno
+}
+
+// Retorna el valor de la cantidad Minima de repositorios
+func minimo(lista [20]InfoLenguaje) int {
+	valorRetorno := lista[0].cantidad
+	for i := 1; i < 20; i++ {
+		if valorRetorno > lista[i].cantidad {
+			valorRetorno = lista[i].cantidad
+		}
+	}
+	return valorRetorno
+}
+
+func listarRating(lista [20]InfoLenguaje) {
+	fmt.Println("Lista de Lenguajes")
+	fmt.Printf("\n\t-------------------------------------------------------------------------------------------------------------------------")
+	fmt.Printf("\n\t%s%30s%30s%15s%15s%15s%15s", "|", "LENGUAJE", "|", "RATING", "|", "REPOSITORIOS", "|")
+	for i := 0; i < 20; i++ {
+		fmt.Printf("\n\t|-----------------------------------------------------------+-----------------------------+-----------------------------|")
+		fmt.Printf("\n\t%s%30s%30s%15.3f%15s%15d%15s", "|", lista[i].nombre, "|", lista[i].rating, "|", lista[i].cantidad, "|")
+	}
+	fmt.Printf("\n\t-------------------------------------------------------------------------------------------------------------------------\n")
+
 }
 
 // Extrae los registros de archivo.csv y retorna en un
