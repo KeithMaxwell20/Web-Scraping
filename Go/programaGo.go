@@ -31,6 +31,10 @@ func main() {
 
 	fmt.Println("Iniciando Programa...")
 
+	directorio := "../Resultados/"
+	archivoGrafico := "GraficosGO.html"
+	verificarExisteDirectorio(directorio)
+
 	//Leyendo del archivo .csv
 	archivoEntrada := "../tiobe-list.csv"
 	listaLenguajes := extraerDatosEntrada(archivoEntrada)
@@ -55,21 +59,33 @@ func main() {
 
 	// Ordenando Lista
 	ordenarListaResultados(&listaResultados)
-	//	archivoGrafico := "../Resultados/GraficosGO.html"
-	generarGraficoBarras(listaResultados, "GraficosGO.html")
-	openBrowser("GraficosGO.html")
+	generarGraficoBarras(listaResultados, directorio+archivoGrafico)
+	openBrowser(directorio, archivoGrafico)
 	fmt.Println("Programa Finalizado!")
 }
 
+// Verifica si existe el directorio "dir"
+// Si no existe, lo crea
+// Si ya existe, no hace nada
+func verificarExisteDirectorio(dir string) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		if err := os.Mkdir(dir, os.ModePerm); err != nil {
+			log.Fatal(err)
+		}
+	}
+}
+
 // Selecciona el OS actual y abre la direccion en el navegador por defecto
-func openBrowser(url string) {
+func openBrowser(directorio string, archivo string) {
 	var err error
 
 	switch runtime.GOOS {
 	case "linux":
-		err = exec.Command("xdg-open", url).Start()
+		err = exec.Command("xdg-open", directorio+archivo).Start()
 	case "windows":
-		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+		cmd := exec.Command("rundll32", "url.dll,FileProtocolHandler", archivo)
+		cmd.Dir = directorio
+		cmd.Output()
 	default:
 		err = fmt.Errorf("unsupported platform")
 	}
