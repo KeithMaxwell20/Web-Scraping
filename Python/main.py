@@ -3,6 +3,11 @@ from bs4 import BeautifulSoup #Herramientas de Web Scraping
 import re #Para expresiones regulares
 import os # Para verificar la existencia de un archivo
 import csv # Para crear archivos del tipo csv
+import time # Para pausar la ejecución del programa
+import matplotlib.pyplot as plt # Para graficar los resultados finales
+import itertools # Para iterar una lista
+
+
 
 
 # Una función que retorne la lista con la cantidad de tópicos todos los lenguajes
@@ -15,6 +20,13 @@ def retornar_lista(url, lista_topic):
     for topico in lista_topic:
         url_busqueda = url + "/" + topico #Url de un lenguaje dado
         pagina = requests.get(url_busqueda) #Recibe el html de la página
+
+        # Acá manejamos el error http 429 por el cual realizamos más peticiones de las permitidas en un rango de tiempo
+        while pagina.status_code == 429:
+            print("Saltó el código http 429, esperaremos", int(pagina.headers["Retry-after"]) ,"segundos antes de mandar más peticiones")
+            time.sleep(int(pagina.headers["Retry-after"]))
+            pagina = requests.get(url_busqueda)
+
 
         soup = BeautifulSoup(pagina.content, "html.parser")
         # Buscamos la clase que contiene el texto que necesitamos y convertimos a string
@@ -63,20 +75,52 @@ def retornar_rating(min, max, cantidad_repositorios):
 
     return lista_rat
 
-def ordenar_imprimir(lista):
+# Ordenar lista según rating, número de tópicos y lenguaje
+def ordenar_listas(lista_rating, lista_repositorios, lista_populares):
     # Ordenar lista
-    lista_ordenada = lista.sort(reverse=True)
+    #lista_ordenada = lista.sort(reverse=True)
     #Imprimir lista
 
-    # El problema de devolver la lista en formato zip es que necesito para
-    # graficar, a menos que pueda obtener su índice
-    return lista_ordenada
+    zipeado = zip(lista_rating, lista_repositorios, lista_populares)
+    lista_zipeado = list(zipeado)
+
+    lista_zipeado.sort(reverse=True)
+
+    return lista_zipeado
+
+def imprimir_lista(listas_ordenadas):
+    print() # Genera un espacio en blanco
+    print("Nombre del lenguaje, Número de Apariciones, Rating")
+
+    for elemento in listas_ordenadas:
+        print(elemento[2], elemento[1], elemento[0])
+
+
+# Realizar gráfico de los 10 lenguajes con mayor número de apariciones
+def crear_grafico(listas_ordenadas):
+
+    # Crear 2 listas, una con los 10 lenguajes y otra con su nro de repositorios
+    lista_lenguajes = []
+    cantidad_repositorios = []
+
+    for elemento in itertools.islice(listas_ordenadas, 10):
+        lista_lenguajes.append(elemento[2])
+        cantidad_repositorios.append(elemento[1])
+
+    # Graficar los resultados
+    plt.rcParams["figure.figsize"] = [7.00, 3.50]
+    plt.rcParams["figure.autolayout"] = True
+
+    plt.bar(lista_lenguajes, cantidad_repositorios)
+
+    plt.show()
+
 
 '''Este es un programa que utiliza Web Scraping para analizar y comparar la
 popularidad de distintos lenguajes de programación según el índice Tiobe'''
 
 # Definimos una lista con los 20 lenguajes más populares según TIOBE
-lista_populares = ["Python", "C", "Java", "C++", "C#", "Visual Basic", "JavaScript",
+lista_populares = ["Python", "C", "Java", "C++", "C#", "Visual Basic", "JS",
                    "Assembly", "SQL", "PHP", "R", "Delphi", "Go", "Swift",
                    "Ruby", "Classic Visual Basic", "Objective-C", "Perl", "Lua",
                    "MATLAB"]
@@ -95,7 +139,7 @@ url = "https://github.com/topics"
 
 # Verificamos si el archivo con los tópicos y sus repositorios existe
 #if not os.path.exists('/resultados.csv'):
-# Recibimos la lista con los tópicos por cada lenguaje
+# Recibimos la lista con la cantidad de tópicos por cada lenguaje
 lista = retornar_lista(url, lista_topic)
 # 1.2 Creamos el archivo csv
 crear_csv(lista, lista_populares)
@@ -111,7 +155,11 @@ maximo = max(lista)
 lista_rating = retornar_rating(minimo, maximo, lista)
 
 # 1.4 Ordenar descendentemente e imprimir
-lista_rating = ordenar_imprimir(lista_rating)
+listas_ordenadas = ordenar_listas(lista_rating, lista, lista_populares)
+# Imprimir listas
+imprimir_lista(listas_ordenadas)
 
 
+# 1.5 Realizar un gráfico de barras con los 10 primeros lenguajes
+crear_grafico(listas_ordenadas)
 
