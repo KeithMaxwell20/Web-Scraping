@@ -2,8 +2,10 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
@@ -14,6 +16,8 @@ import (
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
 	"github.com/gocolly/colly/v2"
+
+	"github.com/chromedp/chromedp"
 )
 
 type Resultado struct {
@@ -27,17 +31,45 @@ type Resultados struct {
 }
 
 func main() {
+	fmt.Println("Empieza el programa...")
+	// create chrome instance
+	ctx, cancel := chromedp.NewContext(
+		context.Background(),
+		// chromedp.WithDebugf(log.Printf),
+	)
+	defer cancel()
 
-	linkTopics := "https://github.com/topics/nodejs?o=desc&s=updated"
+	// create a timeout
+	ctx, cancel = context.WithTimeout(ctx, 150*time.Second)
+	defer cancel()
 
-	count := 34
-	for i := 2; i <= count; i++ {
-		linkTopics = linkTopics + "&page=" + strconv.Itoa(i)
+	fmt.Println("Acabamos de agregar el timeout...")
+
+	// navigate to a page, wait for an element, click
+	var example string
+	err := chromedp.Run(ctx,
+		chromedp.Navigate(`https://github.com/topics/nodejs`),
+		// wait for footer element is visible (ie, page is loaded)
+		chromedp.WaitVisible(`body > footer`),
+		// find and click "Example" link
+		chromedp.Click("button.ajax-pagination-btn.btn.btn-outline.color-border-default.f6.mt-0.width-full", chromedp.NodeVisible),
+		// wait for footer element is visible (ie, page is loaded)
+		chromedp.WaitVisible(`body > footer`),
+		chromedp.OuterHTML("html", &example, chromedp.ByQuery),
+	)
+	if err != nil {
+		log.Fatal(err)
 	}
-	fmt.Println(linkTopics)
+
+	localFileName := "data.html"
+	f, _ := os.Create(localFileName)
+
+	f.WriteString(example)
+	f.Close()
+	fmt.Println(localFileName)
 	var listaArticulos []Resultados
 
-	listaArticulos = getHorasTopics(linkTopics)
+	listaArticulos = getHorasTopics(localFileName)
 	fmt.Println("Cant. Total de Articulos: " + strconv.Itoa(len(listaArticulos)))
 	var mapeo map[string]int
 	mapeo = contarTopics(listaArticulos)
@@ -187,7 +219,6 @@ func getHorasTopics(link string) []Resultados {
 	var listaRetorno []Resultados
 
 	c := colly.NewCollector()
-
 	c.OnHTML("article.border.rounded.color-shadow-small.color-bg-subtle.my-4", func(e *colly.HTMLElement) {
 		r := Resultados{horaUltimaAct: strings.TrimSpace(e.ChildAttr("relative-time.no-wrap", "datetime"))}
 		listaTopics := e.ChildTexts("a.topic-tag.topic-tag-link.f6.mb-2")
@@ -198,10 +229,31 @@ func getHorasTopics(link string) []Resultados {
 			}
 			r.listaTopics = listaTopics
 			listaRetorno = append(listaRetorno, r)
+			fmt.Println("AAAAAAAAAAAAA")
 		}
 
 	})
-	c.Visit(link)
 
+	// Creamos un protocolo de transporte para manipular archivos locales
+
+	t := &http.Transport{}
+	t.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
+	d := &http.Client{Transport: t}
+	c.WithTransport(d.Transport)
+	path, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println(path)
+	fmt.Println("Nuevo Path: ")
+	pathArchivoLocal := "file://" + pathLocal(path) + link
+	//	c.Visit("file:///Users/Arturo/Desktop/Sexto Semestre/Estructuras de los Lenguajes I/Unidad VIII - Estructuras de Control a nivel de sentencia/Actividades/pruebaDPColly/data.html")
+	c.Visit(pathArchivoLocal)
 	return listaRetorno
+}
+
+// Cambia los "\" por "/" y borra mencion del disco actual
+func pathLocal(oldPath string) string {
+	s := strings.ReplaceAll(oldPath, "\\", "/")
+	return s[strings.Index(s, ":")+1:] + "/"
 }
