@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,9 +14,8 @@ import (
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
+	"github.com/go-rod/rod"
 	"github.com/gocolly/colly/v2"
-
-	"github.com/chromedp/chromedp"
 )
 
 type Resultado struct {
@@ -32,41 +30,17 @@ type Resultados struct {
 
 func main() {
 	fmt.Println("Empieza el programa...")
-	// create chrome instance
-	ctx, cancel := chromedp.NewContext(
-		context.Background(),
-		// chromedp.WithDebugf(log.Printf),
-	)
-	defer cancel()
-
-	// create a timeout
-	ctx, cancel = context.WithTimeout(ctx, 150*time.Second)
-	defer cancel()
-
-	fmt.Println("Acabamos de agregar el timeout...")
-
-	// navigate to a page, wait for an element, click
-	var example string
-	err := chromedp.Run(ctx,
-		chromedp.Navigate(`https://github.com/topics/nodejs`),
-		// wait for footer element is visible (ie, page is loaded)
-		chromedp.WaitVisible(`body > footer`),
-		// find and click "Example" link
-		chromedp.Click("button.ajax-pagination-btn.btn.btn-outline.color-border-default.f6.mt-0.width-full", chromedp.NodeVisible),
-		// wait for footer element is visible (ie, page is loaded)
-		chromedp.WaitVisible(`body > footer`),
-		chromedp.OuterHTML("html", &example, chromedp.ByQuery),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	localFileName := "data.html"
-	f, _ := os.Create(localFileName)
+	link := "https://github.com/topics/nodejs?o=desc&s=updated"
+	cantRepeticiones := 33
 
-	f.WriteString(example)
-	f.Close()
-	fmt.Println(localFileName)
+	fmt.Println("Generando Archivo.\nEste proceso puede tomar un tiempo...")
+
+	// Generamos el archivo local con todos los articulos
+	generandoArchivoHTML(localFileName, link, cantRepeticiones)
+
+	fmt.Println("Teminado el proceso de generacion de archivo!")
+
 	var listaArticulos []Resultados
 
 	listaArticulos = getHorasTopics(localFileName)
@@ -84,7 +58,7 @@ func main() {
 	// Ordenando
 	ordenarListaResultados(&lista)
 	fmt.Println("Lista Ordenada de Resultados: ")
-	imprimirLista(lista)
+	//imprimirLista(lista)
 
 	directorio := "../Resultados/"
 	archivoGrafico := "GraficosTema2GO.html"
@@ -229,7 +203,6 @@ func getHorasTopics(link string) []Resultados {
 			}
 			r.listaTopics = listaTopics
 			listaRetorno = append(listaRetorno, r)
-			fmt.Println("AAAAAAAAAAAAA")
 		}
 
 	})
@@ -247,7 +220,6 @@ func getHorasTopics(link string) []Resultados {
 	fmt.Println(path)
 	fmt.Println("Nuevo Path: ")
 	pathArchivoLocal := "file://" + pathLocal(path) + link
-	//	c.Visit("file:///Users/Arturo/Desktop/Sexto Semestre/Estructuras de los Lenguajes I/Unidad VIII - Estructuras de Control a nivel de sentencia/Actividades/pruebaDPColly/data.html")
 	c.Visit(pathArchivoLocal)
 	return listaRetorno
 }
@@ -256,4 +228,36 @@ func getHorasTopics(link string) []Resultados {
 func pathLocal(oldPath string) string {
 	s := strings.ReplaceAll(oldPath, "\\", "/")
 	return s[strings.Index(s, ":")+1:] + "/"
+}
+
+// Accede a la pagina web, realiza el proceso "Load More"
+// de manera consecutivas y retorna el archivo .html generado
+func generandoArchivoHTML(nombreArchivo string, link string, cantidad int) {
+
+	page := rod.New().
+		MustConnect().
+		MustPage(link)
+
+	// Esperamos a que toda la pagina se haya cargado
+	page.MustElement(`body > footer`).MustWaitVisible()
+
+	// Realizamos los clicks consecutivos al boton "Load More"
+	for i := 0; i < cantidad; i++ {
+		fmt.Printf("...")
+		page.MustElement(`button.ajax-pagination-btn.btn.btn-outline.color-border-default.f6.mt-0.width-full`).MustClick()
+		page.MustElement(`body > footer`).MustWaitVisible()
+		time.Sleep(3 * time.Second)
+	}
+
+	f, err := os.Create(nombreArchivo)
+	// Error
+	if err != nil {
+		log.Println(err)
+	}
+	// Recuperamos la pagina resultante completa
+	data, _ := page.HTML()
+	// Escribimos en el archivo
+	f.WriteString(data)
+
+	f.Close()
 }
