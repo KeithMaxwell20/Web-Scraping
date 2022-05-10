@@ -44,6 +44,13 @@ func main() {
 	var listaArticulos []Resultados
 
 	listaArticulos = getHorasTopics(localFileName)
+
+	// Guardamos los resultados en un archivo
+	guardarListaResultados("../Resultados/ResultadosTema2Go.csv", listaArticulos)
+
+	// Eliminamos los resultados que tienen mas de 30 dias de antigüedad
+	listaArticulos = limpiarLista(listaArticulos)
+
 	fmt.Println("Cant. Total de Articulos: " + strconv.Itoa(len(listaArticulos)))
 	var mapeo map[string]int
 	mapeo = contarTopics(listaArticulos)
@@ -63,7 +70,7 @@ func main() {
 	directorio := "../Resultados/"
 	archivoGrafico := "GraficosTema2GO.html"
 	verificarExisteDirectorio(directorio)
-	generarGraficoBarras(lista, directorio+archivoGrafico)
+	generarGraficoBarras(lista, directorio+archivoGrafico, 20)
 	fmt.Println("A continuación, se genera el archivo del gráfico de barras.")
 	fmt.Println("Presione ENTER para continuar...")
 	bufio.NewReader(os.Stdin).ReadString('\n')
@@ -79,7 +86,7 @@ func generarItems(lista []Resultado) []opts.BarData {
 	return items
 }
 
-func generarGraficoBarras(lista []Resultado, direccionArchivo string) {
+func generarGraficoBarras(lista []Resultado, direccionArchivo string, cantBarras int) {
 	bar := charts.NewBar()
 	bar.SetGlobalOptions(
 		charts.WithTitleOpts(opts.Title{
@@ -100,9 +107,10 @@ func generarGraficoBarras(lista []Resultado, direccionArchivo string) {
 		}),
 	)
 
-	var nombres [20]string
+	nombres := make([]string, cantBarras)
+
 	// Generando los valores del eje X
-	for i := 0; i < 20; i++ {
+	for i := 0; i < cantBarras; i++ {
 		nombres[i] = lista[i].nombre
 	}
 
@@ -260,4 +268,42 @@ func generandoArchivoHTML(nombreArchivo string, link string, cantidad int) {
 	f.WriteString(data)
 
 	f.Close()
+}
+
+// Guarda los resultados de la lista en un archivo .csv
+func guardarListaResultados(direccionNombre string, lista []Resultados) {
+	archivo, err := os.Create(direccionNombre)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Concatenamos cada lista y escribimos en el archivo
+	for i := 0; i < len(lista); i++ {
+		aux := strings.Join(lista[i].listaTopics, ",")
+		archivo.WriteString(aux)
+	}
+
+	archivo.Close()
+}
+
+// Eliminamos los resultados que tienen mas de 30 dias de antigüedad
+func limpiarLista(lista []Resultados) []Resultados {
+	listaNueva := make([]Resultados, 0)
+
+	// Tiempo Actual y de Hace Mes
+	tiempoActual := time.Now().UTC()
+	tiempoHaceUnMes := tiempoActual.AddDate(0, -1, 0)
+
+	for i := 0; i < len(lista); i++ {
+		tiempoArticulo, _ := time.Parse(time.RFC3339, lista[i].horaUltimaAct)
+		if tiempoArticulo.After(tiempoHaceUnMes) == true {
+			var aux Resultados
+			aux.horaUltimaAct = lista[i].horaUltimaAct
+			aux.listaTopics = lista[i].listaTopics
+			listaNueva = append(listaNueva, aux)
+		}
+	}
+
+	return listaNueva
 }
