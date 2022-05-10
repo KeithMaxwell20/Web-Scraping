@@ -65,7 +65,7 @@ func main() {
 	// Ordenando
 	ordenarListaResultados(&lista)
 	fmt.Println("Lista Ordenada de Resultados: ")
-	//imprimirLista(lista)
+	imprimirLista(lista)
 
 	directorio := "../Resultados/"
 	archivoGrafico := "GraficosTema2GO.html"
@@ -152,10 +152,16 @@ func openBrowser(directorio string, archivo string) {
 
 }
 
+// Imprimimos la lista. TOPIC - NRO_APARICIONES
 func imprimirLista(lista []Resultado) {
+
+	fmt.Printf("\n\t-------------------------------------------------------------------------------------------")
+	fmt.Printf("\n\t%s%30s%30s%15s%15s", "|", "TOPIC", "|", "Nº APARICIONES", "|")
 	for i := 0; i < len(lista); i++ {
-		fmt.Printf("\n%d) %s:\t%d", i+1, lista[i].nombre, lista[i].nroApariciones)
+		fmt.Printf("\n\t|-----------------------------------------------------------+-----------------------------|")
+		fmt.Printf("\n\t%s%30s%30s%15d%15s", "|", lista[i].nombre, "|", lista[i].nroApariciones, "|")
 	}
+	fmt.Printf("\n\t-------------------------------------------------------------------------------------------\n")
 }
 
 // Ordena la lista de resultados, de mayor a menor
@@ -171,24 +177,19 @@ func ordenarListaResultados(lista *[]Resultado) {
 	}
 }
 
+// Contamos el nro de apariciones de cada topic.
+// Retornamos los resultados en un mapeo
 func contarTopics(lista []Resultados) map[string]int {
 	var aux map[string]int
 	aux = make(map[string]int)
 
-	// Tiempo Actual y de Hace Mes
-	tiempoActual := time.Now().UTC()
-	tiempoHaceUnMes := tiempoActual.AddDate(0, -1, 0)
-
 	for i := 0; i < len(lista); i++ {
-		tiempoArticulo, _ := time.Parse(time.RFC3339, lista[i].horaUltimaAct)
-		if tiempoArticulo.After(tiempoHaceUnMes) == true {
-			for j := 0; j < len(lista[i].listaTopics); j++ {
-				// Si el texto aun no existe en el mapeo
-				if aux[lista[i].listaTopics[j]] == 0 {
-					aux[lista[i].listaTopics[j]] = 1
-				} else { // Si el texto ya existe en el mapeo
-					aux[lista[i].listaTopics[j]]++
-				}
+		for j := 0; j < len(lista[i].listaTopics); j++ {
+			// Si el texto aun no existe en el mapeo
+			if aux[lista[i].listaTopics[j]] == 0 {
+				aux[lista[i].listaTopics[j]] = 1
+			} else { // Si el texto ya existe en el mapeo
+				aux[lista[i].listaTopics[j]]++
 			}
 		}
 	}
