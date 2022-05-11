@@ -114,6 +114,10 @@ def crear_grafico(listas_ordenadas):
     plt.rcParams["figure.figsize"] = [7.00, 3.50]
     plt.rcParams["figure.autolayout"] = True
 
+    # Etiquetar ejes x e y
+    plt.xlabel('Lenguajes')
+    plt.ylabel('Apariciones')
+
     plt.bar(lista_lenguajes, cantidad_apariciones)
     plt.show()
 
