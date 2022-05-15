@@ -22,10 +22,8 @@ url = "https://github.com/topics"
 # Recibimos la lista con la cantidad de tópicos por los 20 lenguajes más populares
 lista = utils.retornar_lista(url, lista_topic)
 
-
 # 1.2 Creamos el archivo csv
 utils.crear_csv(lista, lista_populares)
-
 
 # 1.3 Hallar máximo y mínimo número de apariciones de los 20 lenguajes en github
 minimo = min(lista)
@@ -33,11 +31,9 @@ maximo = max(lista)
 # Calculamos el rating de github y lo colocamos en una lista
 lista_rating = utils.retornar_rating(minimo, maximo, lista)
 
-
 # 1.4 Ordenar descendentemente e imprimir
 listas_ordenadas = utils.ordenar_listas(lista_rating, lista, lista_populares)
 utils.imprimir_lista(listas_ordenadas)
-
 
 # 1.5 Realizar un gráfico de barras con los 10 primeros lenguajes según
 # número de apariciones en Github
