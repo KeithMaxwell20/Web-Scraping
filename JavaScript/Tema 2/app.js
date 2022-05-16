@@ -71,8 +71,8 @@ async function scraping() {
         }
 
         let obj = {
-            names: topicsName,
-            matches: matchesTopics,
+            TOPIC: topicsName,
+            NRO_APARICIONES: matchesTopics,
         }
 
         return obj;
@@ -85,17 +85,17 @@ async function scraping() {
 
 function convertObjToArray (obj) {
     const array = [];
-    for (let i=obj.names.length-1; i >= 0; i--) {
+    for (let i=obj.TOPIC.length-1; i >= 0; i--) {
         array.push(
             {
-                name: obj.names[i],
-                matching: obj.matches[i],
+                TOPIC: obj.TOPIC[i],
+                NRO_APARICIONES: obj.NRO_APARICIONES[i],
             }
         );
     }
 
     array.sort(function (a, b) {
-        return b.matching - a.matching;
+        return b.NRO_APARICIONES - a.NRO_APARICIONES;
     });
 
     return array;
@@ -118,3 +118,4 @@ async function writeDataJSON (arrayMatchesTopic) {
     // Se escribe el objeto en un archivo JSON en formato JSON para poder recuperar luego
     fs.writeFileSync("data.json", JSON.stringify(data));
 }
+
