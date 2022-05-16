@@ -111,11 +111,12 @@ async function writeDataJSON (arrayMatchesTopic) {
     // Se obtiene los primeros 10
     for (let i = 0; i < 10; i++) {
         let e = arrayMatchesTopic[i];
-        data.TOPIC.push(arrayMatchesTopic[i].name);
-        data.NRO_APARICIONES.push(arrayMatchesTopic[i].matching);
+        data.TOPIC.push(arrayMatchesTopic[i].TOPIC);
+        data.NRO_APARICIONES.push(arrayMatchesTopic[i].NRO_APARICIONES);
     }
    
     // Se escribe el objeto en un archivo JSON en formato JSON para poder recuperar luego
     fs.writeFileSync("data.json", JSON.stringify(data));
 }
+
 
