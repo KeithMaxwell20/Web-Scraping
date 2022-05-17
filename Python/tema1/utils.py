@@ -70,8 +70,16 @@ def crear_csv(lista_lenguajes, cantidad_repositorios):
 
     # Escribimos los nombres de los lenguajes junto a su cantidad de repositorios
     # cada uno en una fila distinta
-    escritor.writerow(cantidad_repositorios)
-    escritor.writerow(lista_lenguajes)
+
+
+
+    zipeado = zip(lista_lenguajes, cantidad_repositorios)
+    lista_zipeado = list(zipeado)
+
+    escritor.writerow(["Lenguaje", "Apariciones"])
+    for elemento in lista_zipeado:
+        escritor.writerow([elemento[1], elemento[0]])
+        
 
     print("El archivo csv se ha creado con éxito")
 
@@ -113,7 +121,7 @@ def crear_grafico(listas_ordenadas):
     cantidad_apariciones = []
 
     # islice facilita la iteración de la lista
-    for elemento in itertools.islice(listas_ordenadas, 10):
+    for elemento in itertools.islice(listas_ordenadas, 10): # for elemento in listas_ordenadas repito 10 veces
         lista_lenguajes.append(elemento[2])
         cantidad_apariciones.append(elemento[1])
 
