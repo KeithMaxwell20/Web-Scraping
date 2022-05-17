@@ -70,9 +70,6 @@ def crear_csv(lista_lenguajes, cantidad_repositorios):
 
     # Escribimos los nombres de los lenguajes junto a su cantidad de repositorios
     # cada uno en una fila distinta
-
-
-
     zipeado = zip(lista_lenguajes, cantidad_repositorios)
     lista_zipeado = list(zipeado)
 
