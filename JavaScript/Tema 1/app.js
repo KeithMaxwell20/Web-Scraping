@@ -27,8 +27,7 @@ async function main() {
     // Se escribe en un archivos los resultados
     // Se verifica que exista el directorio y que sino se cree
     if (stateDirectory()) {
-        fs.writeFileSync(urlResult + "ResultadosJavaScriptTema1
-                         .csv", arrayToStr(arrayTopicsMatching));
+        fs.writeFileSync(urlResult + "ResultadosJavaScriptTema1.csv", arrayToStr(arrayTopicsMatching));
     }
 
     // Se obtiene el valor min y max para el calculo del Rating
