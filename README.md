@@ -86,3 +86,26 @@ node app.js
 Una vez terminada la ejecución se abre el archivo **index.html** corriendo sobre un servidor.
 
 Si se utiliza VS Code se recomienda instalar la extensión: **Live Server**
+
+## Para ejecutar en Java
+
+### Requerimientos
+- Tener instalado el entorno de ejecución de Java (versión openjdk 11.0.9. o superiores)
+
+- Tener instalado la última versión del IDE Apache Netbeans (versión 13)
+
+    (Puede ser descargado de la web oficial [aquí](https://netbeans.apache.org/download/index.html)).
+
+### Limpiar y Compilar
+- Abrir el proyecto Maven en Netbeans (directorio Java)
+- Seleccionar la opción de Limpiar y Compilar
+#### Para ejecutar:
+- Seleccionar la opción de Run (en el IDE Netbeans)
+
+
+El programa pregunta en consola cuál programa ejecutar:
+
+#### Para el tema 1:
+- Ingresar 1 y ENTER
+#### Para el tema 2:
+- Ingresar 2 y ENTER
