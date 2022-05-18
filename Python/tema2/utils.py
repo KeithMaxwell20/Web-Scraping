@@ -56,6 +56,7 @@ def obtenerTotalArticulos(pagina):
             if diferencia.days <= 30:  # Si el artículo tiene 30 días o menos
                 contador_art += 1
 
+    print()
     print("Contador de artículos: ", contador_art)
 
     return contador_art
