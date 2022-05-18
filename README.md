@@ -13,10 +13,10 @@
 ### Ejecución
 #### Para la inicialización del programa
 ```
-$ cd Go
-$ go mod init Go
-$ go mod tidy
-$ go mod install .
+cd Go
+go mod init Go
+go mod tidy
+go mod install .
 ```
 #### Para ejecutar:
 ```
