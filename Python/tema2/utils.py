@@ -93,18 +93,22 @@ def obtenerListaTopics(pagina, contador_art):
 def crear_csv(lista_ordenada):
     print("Creando archivo csv...")
 
-    #cantidad_apariciones = []
+    cantidad_apariciones = []
     lista_topicos = []
 
     # Guardar resultados en 2 listas distintas para graficar
     for elemento in lista_ordenada:
         lista_topicos.append(elemento[0])
+        cantidad_apariciones.append(elemento[1])
 
     archivo = open('ResultadosTema2.csv', 'w') #Crear el archivo en modo escritura
     escritor = csv.writer(archivo) # Escritor para el archivo csv
 
     # Escribimos los nombres de los lenguajes en el archivo csv
-    escritor.writerow(lista_topicos)
+    i=0
+    for item in lista_topicos:
+        escritor.writerow([item, cantidad_apariciones[i]])
+        i+=1
 
 
     print("El archivo csv se ha creado con éxito")
