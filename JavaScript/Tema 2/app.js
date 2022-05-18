@@ -16,6 +16,13 @@ async function main() {
     console.table(arrayMatchesTopic);
 
     writeDataJSON(arrayMatchesTopic);
+    
+    // Se escribe en un archivos los resultados
+    // Se verifica que exista el directorio y que sino se cree
+    if (stateDirectory()) {
+        fs.writeFileSync(urlResult + "ResultadosTema2JavaScript.csv", arrayToStr(arrayMatchesTopic));
+        console.log("El archivo con los resultados ha sido creado con exito");
+    }
 }
 
 async function scraping() {
@@ -119,4 +126,33 @@ async function writeDataJSON (arrayMatchesTopic) {
     fs.writeFileSync("data.json", JSON.stringify(data));
 }
 
+// Función que convierte un array a string para guardar en un archivo
+function arrayToStr(array, delimiter = ',') {
+    var str = "";
 
+    array.forEach(function (element) {
+        str = str + element.TOPIC + delimiter + element.NRO_APARICIONES + "\n";
+    });
+
+    return str;
+}
+
+// Funcion que verifica si exsite el directorio de donde se creara el archivo con los Resultados
+// En caso que no exista crea el directorio
+function stateDirectory() {
+    let state = true;
+
+    if (fs.existsSync(urlResult)) {
+        console.log("El directorio ya ha sido creado");
+    } else {
+        fs.mkdir(urlResult, (error) => {
+            if (error) {
+                console.log(error.message);
+                state = false;
+            }
+            console.log("Directorio creado con exito");
+        });
+    }
+
+    return state;
+}
