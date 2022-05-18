@@ -1,0 +1,8 @@
+Para la ejecución del programa, se requiere la librería
+BeatifulSoup.
+
+Comando para descargarlo: pip install beautifulsoup4
+
+Además, es requerida la descarga de la librería Selenium:
+
+Comando para descargarlo: pip install selenium
