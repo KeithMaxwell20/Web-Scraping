@@ -18,6 +18,13 @@ go mod init Go
 go mod tidy
 go mod install .
 ```
+#### Para instalar las librerias
+```
+go get github.com/go-echarts/go-echarts/v2/charts
+go get github.com/go-echarts/go-echarts/v2/opts
+go get github.com/go-rod/rod
+go get github.com/gocolly/colly/v2
+```
 #### Para ejecutar:
 ```
 go run main.go X
