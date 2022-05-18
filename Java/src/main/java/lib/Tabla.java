@@ -2,11 +2,16 @@
 package lib;
 
 /**
- *
- * 
+ * Genera salida en consola con formato tabla.
  */
 public class Tabla {
 
+	/**
+	 * Genera la tabla en consola 
+	 * @param encabezados Nombres de las columnas
+ 	 * @datos datos a imprimir en cada fila
+	 * 
+	*/
     public void generarTabla(String[] encabezados, String[][] datos) {
         System.out.printf("\n\t");
 	for (int i = 0; i < encabezados.length; i++) {

@@ -12,7 +12,12 @@ public class Grafico extends ApplicationFrame{
         
         private String[] info;
         private String[][] datos;
-        
+    
+	/**
+	 * Constructor 
+	 * @param info Indica los nombres del grafico, ejes y ventana.
+	 * @param datos Datos de nombre de barra y altura de cada barra
+	 */
 	public Grafico(String[] info, String[][] datos)
 	{
             super(info[0]);
@@ -46,7 +51,7 @@ public class Grafico extends ApplicationFrame{
 	}
 	
         /***
-         * Genera el grafico, recibiendo info y datos
+         * Ejecuta las funciones de generar grafico
          */
 	public void Run()
 	{

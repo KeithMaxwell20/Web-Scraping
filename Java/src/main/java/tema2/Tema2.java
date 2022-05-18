@@ -40,15 +40,21 @@ public class Tema2 {
             this.cantidad = cantidad;
         }
     }
-    
+    // Cantidad máxima de solicitudes Load More a la pagina web
     private int cantRepeticiones = 33;
     
+     /**
+     * Ejecuta  los metodos para el tema 1
+     * @param nombreArchivo1 Nombre del archivo .csv para el item 1.2
+     * @param directorioArchivo1 Directorio del archivo 1
+     * @param nombreArchivo2 Nombre del archivo .html para el gráfico del item 1.4
+     * @param directorioArchivo2 Directorio del archivo 2
+     */
     public void run(String nombreArchivo1, String directorioArchivo1, String nombreArchivo2, String directorioArchivo2) {
         System.out.println("Iniciando Programa 2...");
         String localFileName = "data.html";
         
         // Para analizar 
-//        String link = "https://github.com/topics/nodejs?o=desc&s=updated";
         String link = "https://github.com/topics/python?o=desc&s=updated";
         System.out.println("Procesando.\nEste proceso puede tomar un tiempo...");
         
@@ -61,26 +67,28 @@ public class Tema2 {
         ArrayList<Registro> listaResultados = cargarListaRegistro(listaArticulos);
         
         // Ordenamos la lista
+        // Utilizamos la clase Collections, definiendo un Comparador para ordenar de acuerdo al atributo cantidad
         Collections.sort(listaResultados, new Comparator<Registro>() {
             @Override
             public int compare(Registro reg1, Registro reg2) {
             return reg1.cantidad > reg2.cantidad ? -1 : (reg1.cantidad < reg2.cantidad) ? 1 : 0;
         }});
 
+        // Preparamos los datos para enviar al objeto Tabla (item 2.2)
         // Encabezados        
         String[] encabezado = {"TOPIC", "MENCIONES"};
         
         // Datos de la tabla
         String[][] matrizResultados = new String[listaResultados.size()][encabezado.length];        
-	for (int i = 0; i < listaResultados.size(); i++) {
+    	for (int i = 0; i < listaResultados.size(); i++) {
             matrizResultados[i][0] = listaResultados.get(i).nombreTopic;
             matrizResultados[i][1] = listaResultados.get(i).cantidad.toString();
-	}
+	    }
         Tabla t = new Tabla();
         t.generarTabla(encabezado, matrizResultados);
         
         // Generando los datos para el grafico de barras de los 20
-        // temas con mayor cantidad de menciones.
+        // temas con mayor cantidad de menciones. (item 2.3)
         String[] info = {"Temas relacionados con Nodejs", "Los 20 topics mas mencionados", "TOPIC", "MENCIONES"};
         
         String[][] datos = new String[20][3];
@@ -150,6 +158,13 @@ public class Tema2 {
         return lista;
     }
     
+    /**
+    * Visita cada pagina URL (de las 34 posibles)
+    * @param lista Lista recibida por parametro para ir guardando los articulos
+    * @param link Link a la pagina actual (definido por &page=XX)
+    * @param tiempoLimite Objeto de la clase Tiempo que representa 30 dias antes de la fecha y hora actual
+    * @return True or False. Si un articulo supera el tiempo limite, el proceso se detiene y se retorna FALSE (TRUE en el caso contrario)
+    */
     private boolean procesarPagina (ArrayList<Resultados> lista, String link, LocalDateTime tiempoLimite) {
         boolean continuar = true;
 

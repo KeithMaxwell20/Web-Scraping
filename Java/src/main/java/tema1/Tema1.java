@@ -41,8 +41,11 @@ public class Tema1 {
     }
     
     /**
-     * 
-     * 
+     * Ejecuta  los metodos para el tema 1
+     * @param nombreArchivo1 Nombre del archivo .csv para el item 1.2
+     * @param directorioArchivo1 Directorio del archivo 1
+     * @param nombreArchivo2 Nombre del archivo .html para el gráfico del item 1.4
+     * @param directorioArchivo2 Directorio del archivo 2
      */
     public void run(String nombreArchivo1, String directorioArchivo1, String nombreArchivo2, String directorioArchivo2) {
         System.err.println("Iniciando Programa 1"); 
@@ -74,19 +77,18 @@ public class Tema1 {
             listaResultados.add(procesar(listaEntrada.get(i).nombre, listaEntrada.get(i).topic, archivoSalida));
         }
 
-
-        // Ordenamos la lista
-        ordenarLista(listaResultados);
         // Calcular Rating (ítem 1.3)
         calcularRating(listaResultados);
+        // Ordenamos la lista
+        ordenarLista(listaResultados);
         
         // Preparamos el formato de valores requerido para el objeto Tabla
         // Encabezados
-	String[] encabezado = {"LENGUAJE", "RATING", "REPOSITORIOS"};
-	// Lista de Lenguajes con su rating
-	String[][] matrizResultados = new String[listaResultados.size()][encabezado.length];
-        NumberFormat formato = new DecimalFormat("0.000");
-	for (int i = 0; i < listaResultados.size(); i++) {
+        String[] encabezado = {"LENGUAJE", "RATING", "REPOSITORIOS"};
+        // Lista de Lenguajes con su rating
+        String[][] matrizResultados = new String[listaResultados.size()][encabezado.length];
+            NumberFormat formato = new DecimalFormat("0.000");
+        for (int i = 0; i < listaResultados.size(); i++) {
                 matrizResultados[i][0] = listaResultados.get(i).nombre;
                 matrizResultados[i][1] = formato.format(listaResultados.get(i).rating);
                 matrizResultados[i][2] = Integer.toString(listaResultados.get(i).cantidad);
