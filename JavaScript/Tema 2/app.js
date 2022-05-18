@@ -20,7 +20,7 @@ async function main() {
     // Se escribe en un archivos los resultados
     // Se verifica que exista el directorio y que sino se cree
     if (stateDirectory()) {
-        fs.writeFileSync(urlResult + "ResultadosTema2JavaScript.csv", arrayToStr(arrayMatchesTopic));
+        fs.writeFileSync(urlResult + "ResultadosJavaScriptTema2.csv", arrayToStr(arrayMatchesTopic));
         console.log("El archivo con los resultados ha sido creado con exito");
     }
 }
