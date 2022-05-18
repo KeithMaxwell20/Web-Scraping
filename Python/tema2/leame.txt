@@ -6,3 +6,6 @@ Comando para descargarlo: pip install beautifulsoup4
 Además, es requerida la descarga de la librería Selenium:
 
 Comando para descargarlo: pip install selenium
+
+Se colocan los archivos main.py y utils.py en una misma carpeta
+y se ejecuta el main.py
