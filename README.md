@@ -55,7 +55,7 @@ npm install puppeteer
 
 ### Ejecución
 
-#### Para el tema 1
+#### **Para el tema 1**
 
 Dentro de la consola hay que ubicarse dentro del directorio del tema 1:
 ```
@@ -71,7 +71,7 @@ Una vez terminada la ejecución se abre el archivo **index.html** corriendo sobr
 
 Si se utiliza VS Code se recomienda instalar la extensión: **Live Server**
 
-#### Para el tema 2
+#### **Para el tema 2**
 
 Dentro de la consola hay que ubicarse dentro del directorio del tema 1:
 ```
