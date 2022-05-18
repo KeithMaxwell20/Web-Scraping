@@ -1,14 +1,14 @@
 package tema1
 
 import (
+	"Go/grafico"
+	"Go/tabla"
 	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"unicode"
-	"Go/grafico"
-	"Go/tabla"
 
 	"github.com/gocolly/colly/v2"
 )
@@ -45,6 +45,7 @@ func Run(nombreaArchivo1, directorioArchivo1, nombreArchivo2, directorioArchivo2
 		log.Fatal(err)
 	}
 
+	// Extraer la cantidad de repositorios para cada lenguaje
 	var listaResultados [20]InfoLenguaje //Guardamos los resultados para las tablas
 	fmt.Println("Procesando...")
 	for i := 0; i < 20; i++ {
@@ -60,7 +61,7 @@ func Run(nombreaArchivo1, directorioArchivo1, nombreArchivo2, directorioArchivo2
 	calcularRating(&listaResultados)
 
 	// Encabezados
-	var encabezado = []string {"LENGUAJE", "RATING", "REPOSITORIOS"}
+	var encabezado = []string{"LENGUAJE", "RATING", "REPOSITORIOS"}
 	// Lista de Lenguajes con su rating
 	matrizResultados := make([][]string, 0)
 	for i := 0; i < len(listaResultados); i++ {
@@ -68,14 +69,13 @@ func Run(nombreaArchivo1, directorioArchivo1, nombreArchivo2, directorioArchivo2
 		rating := fmt.Sprintf("%.3f", listaResultados[i].rating)
 		cantidad := fmt.Sprintf("%d", listaResultados[i].cantidad)
 
-		var fila = []string {nombre, rating, cantidad} 
+		var fila = []string{nombre, rating, cantidad}
 		matrizResultados = append(matrizResultados, fila)
 	}
 
-
 	tabla.GenerarTabla(encabezado, matrizResultados)
 
-	fmt.Println("A continuación, se genera el archivo del gráfico de barras.")	
+	fmt.Println("A continuación, se genera el archivo del gráfico de barras.")
 	listaGraficar := make(grafico.Resultado, 0)
 	for i := 0; i < CANTIDAD_BARRAS; i++ {
 		aux := grafico.Datos{Nombre: listaResultados[i].nombre, NroApariciones: listaResultados[i].cantidad}
@@ -83,10 +83,10 @@ func Run(nombreaArchivo1, directorioArchivo1, nombreArchivo2, directorioArchivo2
 	}
 
 	texto := grafico.Info{
-		Titulo: "Lenguajes con Mayor Nº de Apariciones",
+		Titulo:    "Lenguajes con Mayor Nº de Apariciones",
 		Subtitulo: "Los 10 primeros lenguajes, ordenados de mayor a menor",
-		EjeX: "NOMBRE",
-		EjeY: "Nº de Apariciones"}
+		EjeX:      "NOMBRE",
+		EjeY:      "Nº de Apariciones"}
 
 	grafico.GenerarGraficoBarras(listaGraficar, directorioArchivo2, nombreArchivo2, CANTIDAD_BARRAS, texto)
 	fmt.Println("Programa Finalizado!")
@@ -102,26 +102,6 @@ func verificarExisteDirectorio(dir string) {
 		}
 	}
 }
-
-/*// Selecciona el OS actual y abre la direccion en el navegador por defecto
-func openBrowser(directorio string, archivo string) {
-	var err error
-
-	switch runtime.GOOS {
-	case "linux":
-		err = exec.Command("xdg-open", directorio+archivo).Start()
-	case "windows":
-		cmd := exec.Command("rundll32", "url.dll,FileProtocolHandler", archivo)
-		cmd.Dir = directorio
-		cmd.Output()
-	default:
-		err = fmt.Errorf("unsupported platform")
-	}
-	if err != nil {
-		log.Fatal(err)
-	}
-
-}*/
 
 // Ordena la lista de resultados, de mayor a menor
 func ordenarListaResultados(lista *[20]InfoLenguaje) {

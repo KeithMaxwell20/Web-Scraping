@@ -1,12 +1,12 @@
 package grafico
 
 import (
-	"os"
-	"os/exec"
 	"bufio"
 	"fmt"
-	"runtime"
 	"log"
+	"os"
+	"os/exec"
+	"runtime"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
@@ -20,10 +20,10 @@ type Datos struct {
 type Resultado []Datos
 
 type Info struct {
-	Titulo string
+	Titulo    string
 	Subtitulo string
-	EjeX string
-	EjeY string
+	EjeX      string
+	EjeY      string
 }
 
 // Genera la lista de cantidades para el gráfico de barras
@@ -40,9 +40,9 @@ func GenerarGraficoBarras(lista Resultado, directorioArchivo, nombreArchivo stri
 	bar := charts.NewBar()
 	bar.SetGlobalOptions(
 		charts.WithTitleOpts(opts.Title{
-//			Title:    "Temas relacionados con Nodejs",
+			//			Title:    "Temas relacionados con Nodejs",
 			Title: texto.Titulo,
-//			Subtitle: "Los primeros 20 temas, de mayor a menor",
+			//			Subtitle: "Los primeros 20 temas, de mayor a menor",
 			Subtitle: texto.Subtitulo,
 			Right:    "30%"}),
 		charts.WithTooltipOpts(opts.Tooltip{Show: true}),

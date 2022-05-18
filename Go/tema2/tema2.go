@@ -1,18 +1,16 @@
 package tema2
 
 import (
+	"Go/grafico"
+	"Go/tabla"
 	"bufio"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	//"os/exec"
-	//"runtime"
 	"strconv"
 	"strings"
 	"time"
-	"Go/grafico"
-	"Go/tabla"
 
 	"github.com/go-rod/rod"
 	"github.com/gocolly/colly/v2"
@@ -43,7 +41,7 @@ func Run(nombreaArchivo1, directorioArchivo1, nombreArchivo2, directorioArchivo2
 	listaArticulos = getHorasTopics(localFileName)
 
 	// Guardamos los resultados en un archivo
-	guardarListaResultados(directorioArchivo1 + "/" + nombreaArchivo1, listaArticulos)
+	guardarListaResultados(directorioArchivo1+"/"+nombreaArchivo1, listaArticulos)
 
 	// Eliminamos los resultados que tienen mas de 30 dias de antigüedad
 	listaArticulos = limpiarLista(listaArticulos)
@@ -66,26 +64,26 @@ func Run(nombreaArchivo1, directorioArchivo1, nombreArchivo2, directorioArchivo2
 	fmt.Println("Lista Ordenada de Resultados: ")
 
 	// Encabezados
-	var encabezado = []string {"TOPIC", "MENCIONES"}
+	var encabezado = []string{"TOPIC", "MENCIONES"}
 
 	matrizResultados := make([][]string, 0)
 	for i := 0; i < len(lista); i++ {
 		nombre := lista[i].Nombre
 		cantidad := fmt.Sprintf("%d", lista[i].NroApariciones)
-		var fila = []string {nombre, cantidad} 
+		var fila = []string{nombre, cantidad}
 		matrizResultados = append(matrizResultados, fila)
 	}
-	
+
 	tabla.GenerarTabla(encabezado, matrizResultados)
-	
+
 	verificarExisteDirectorio(directorioArchivo2)
 	fmt.Println("A continuación, se genera el archivo del gráfico de barras.")
 
 	texto := grafico.Info{
-		Titulo: "Temas Relacionados con Nodejs",
+		Titulo:    "Temas Relacionados con Nodejs",
 		Subtitulo: "Los 20 primeros temas, de mayor a menor",
-		EjeX: "NOMBRE",
-		EjeY: "Nº de Apariciones"}
+		EjeX:      "NOMBRE",
+		EjeY:      "Nº de Apariciones"}
 
 	grafico.GenerarGraficoBarras(lista, directorioArchivo2, nombreArchivo2, CANTIDAD_BARRAS, texto)
 	fmt.Println("Fin del programa")
@@ -142,7 +140,6 @@ func getHorasTopics(link string) []Resultados {
 	})
 
 	// Creamos un protocolo de transporte para manipular archivos locales
-
 	t := &http.Transport{}
 	t.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
 	d := &http.Client{Transport: t}
@@ -221,6 +218,7 @@ func limpiarLista(lista []Resultados) []Resultados {
 	tiempoActual := time.Now().UTC()
 	tiempoHaceUnMes := tiempoActual.AddDate(0, -1, 0)
 
+	//2022-05-17T22:57:22Z
 	for i := 0; i < len(lista); i++ {
 		tiempoArticulo, _ := time.Parse(time.RFC3339, lista[i].horaUltimaAct)
 		if tiempoArticulo.After(tiempoHaceUnMes) == true {
