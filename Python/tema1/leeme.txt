@@ -1,0 +1,7 @@
+Para la ejecución del programa, se requiere la librería
+BeatifulSoup.
+
+Tutorial para descargarla en python: pip install beautifulsoup4
+
+Se colocan los archivos main.py y utils.py en una misma carpeta
+y se ejecuta el main.py
