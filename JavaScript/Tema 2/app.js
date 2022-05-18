@@ -3,6 +3,7 @@ const fs = require('fs'); //Se llama al módulo para interactuar con los archivo
 
 
 const url = "https://github.com/topics/c";
+const urlResult = "../../Resultado/";
 
 const NRO_ITERACIONES_BUTTON = 1;
 
