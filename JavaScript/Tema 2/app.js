@@ -116,8 +116,8 @@ async function writeDataJSON (arrayMatchesTopic) {
         'NRO_APARICIONES': []
     };
 
-    // Se obtiene los primeros 10
-    for (let i = 0; i < 10; i++) {
+    // Se obtiene los primeros 20
+    for (let i = 0; i < 20; i++) {
         let e = arrayMatchesTopic[i];
         data.TOPIC.push(arrayMatchesTopic[i].TOPIC);
         data.NRO_APARICIONES.push(arrayMatchesTopic[i].NRO_APARICIONES);
