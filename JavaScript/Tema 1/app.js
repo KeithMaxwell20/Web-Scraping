@@ -77,6 +77,7 @@ async function scraping(arrayTopics) {
 
         const page = await browser.newPage(); // Abrimos una nueva página
         await page.goto(urlGitHub + element.TOPIC); // Vamos a la URL
+        await page.waitForTimeout(3000);
 
         // Se obtiene el numero de apariciones para el topic
         const topicMatching = await page.evaluate(() => {
