@@ -25,7 +25,7 @@ def obtenerPaginas(url):
                             value='.ajax-pagination-btn.btn.btn-outline.color-border-default.f6.mt-0.width-full').click()
         page_num += 1
         print("Obteniendo la página " + str(page_num))
-        time.sleep(2)
+        time.sleep(5)
 
     return driver.page_source.encode('utf-8')
 
@@ -76,6 +76,7 @@ def obtenerListaTopics(pagina, contador_art):
             lista_total.append(topico.text.strip())
 
     diccionario_no_ordenado = dict(Counter(lista_total))
+
     lista_ordenada = sorted(diccionario_no_ordenado.items(), key=lambda x: x[1], reverse=True)
 
     # Imprimir elementos en la pantalla
@@ -91,21 +92,19 @@ def obtenerListaTopics(pagina, contador_art):
 def crear_csv(lista_ordenada):
     print("Creando archivo csv...")
 
-    cantidad_apariciones = []
+    #cantidad_apariciones = []
     lista_topicos = []
 
     # Guardar resultados en 2 listas distintas para graficar
     for elemento in lista_ordenada:
         lista_topicos.append(elemento[0])
-        cantidad_apariciones.append(elemento[1])
 
     archivo = open('ResultadosTema2.csv', 'w') #Crear el archivo en modo escritura
     escritor = csv.writer(archivo) # Escritor para el archivo csv
 
-    # Escribimos los nombres de los lenguajes junto a su cantidad de repositorios
-    # cada uno en una fila distinta
-    escritor.writerow(cantidad_apariciones)
+    # Escribimos los nombres de los lenguajes en el archivo csv
     escritor.writerow(lista_topicos)
+
 
     print("El archivo csv se ha creado con éxito")
 
