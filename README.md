@@ -130,6 +130,10 @@ Link para descargar el IDE: https://www.jetbrains.com/es-es/pycharm/download/#se
 
 - Tutorial para instalar Selenium en Pycharm: https://blog.finxter.com/how-to-install-selenium-on-pycharm/
 
+- Tutorial para instalar matplotlib en Pycharm: https://blog.finxter.com/how-to-install-matplotlib-on-pycharm/
+
+- De forma alternativa, el propio Pycharm indicará con un subrayado rojo las librerías que falten, y sugerirá instalarlas. Al confirmar esta operación, el IDE se encargará de todo, para evitar instalar los paquetes manualmente.
+
 #### Para ejecutar:
 - Para el ejercicio 1, elegir la función main.py y ejecutarla
 - Para el ejercicio 2, elegir la función main.py y ejecutarla
