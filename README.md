@@ -126,9 +126,9 @@ Link para descargar el IDE: https://www.jetbrains.com/es-es/pycharm/download/#se
 - En "File", elegir "Open" y buscar la carpeta que contenga el ejercicio de Python con los temas 1 y 2.
 
 #### Para instalar las librerias
--Tutorial para instalar BeatifulSoup en Pycharm: https://blog.finxter.com/how-to-install-beautifulsoup-on-pycharm/
+- Tutorial para instalar BeatifulSoup en Pycharm: https://blog.finxter.com/how-to-install-beautifulsoup-on-pycharm/
 
--Tutorial para instalar Selenium en Pycharm: https://blog.finxter.com/how-to-install-selenium-on-pycharm/
+- Tutorial para instalar Selenium en Pycharm: https://blog.finxter.com/how-to-install-selenium-on-pycharm/
 
 #### Para ejecutar:
 - Para el ejercicio 1, elegir la función main.py y ejecutarla
